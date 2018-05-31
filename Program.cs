@@ -77,7 +77,7 @@ namespace RPGAME
             }
             else if(enemy1.strenght < Program.player.strenght)
             {
-                Program.player.Damage(-3);
+                Program.player.Damage(enemy1.strenght - Program.player.strenght );
                 Program.player.money += bet * 2;
                 Console.WriteLine("Вы выйграли {0}", bet);
                 enemy1.ShowStats();
