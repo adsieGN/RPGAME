@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using Faker;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
@@ -152,7 +153,7 @@ namespace RPGAME
     class Person
     {
         static Random rand1 = new Random();
-        private string names = "John,Ruslan,Opel,Yakut,Dima,Alesha,Danil,Vlad";
+        private List<string> names = new List<string>();
 
         public int age, money, hp, force, level, exp, expToLevelUP, strenght;
         public string sex, job, name;
@@ -171,7 +172,12 @@ namespace RPGAME
             force = _force;
             ConversionForce();
 
-            name = names.Split(',')[rand1.Next(0, 7)];
+            for(int i = 1; i <= 20; i++)
+            {
+                names.Add(Name.FullName());
+            }
+
+            name = names[rand1.Next(0, names.Count-1)];
 
         }
 
