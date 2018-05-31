@@ -69,7 +69,6 @@ namespace RPGAME
             if(enemy1.strenght >= Program.player.strenght)
             {
                 Console.WriteLine("Вы проиграли...");
-                enemy1.ShowStats();
                 Program.player.Damage(-enemy1.strenght);
                 Program.player.LevelUp(100);
                 Thread.Sleep(2000);
@@ -80,7 +79,6 @@ namespace RPGAME
                 Program.player.Damage(enemy1.strenght - Program.player.strenght );
                 Program.player.money += bet * 2;
                 Console.WriteLine("Вы выйграли {0}", bet);
-                enemy1.ShowStats();
                 Program.player.LevelUp(800);
                 Thread.Sleep(2000);
                 Console.Clear();
