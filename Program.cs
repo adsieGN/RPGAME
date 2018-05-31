@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace RPGAME
 {
     public enum WeaponsIndexes { AK_47, STECHKIN, DEAGLE, SNIPER_RIFLE, M4A4, AWP, USP_S, AXE, KNIFE };
-    public enum WeaponsDamage {
+    public enum WeaponsForces {
         AK_47 = 120,
         STECHKIN = 40,
         DEAGLE = 60,
@@ -94,19 +94,19 @@ namespace RPGAME
         static public Person seller = Person.RandomPerson("Продавец", 150000);
         static int Weaponscount = new Random().Next(20, 100);
 
-        static public void Purchase(string Wname, int price,Person player, int force)
+        static public void Purchase(Person player, Entity weapon)
         {
             Console.Clear();
 
-            if (player.money >= price)
+            if (player.money >= weapon.price)
             {
-                player.inventory.Add(new Entity(Wname, 5000, force));
-                seller.money += price;
-                player.money -= price;
+                player.inventory.Add(weapon);
+                seller.money += weapon.price;
+                player.money -= weapon.price;
                 Weaponscount--;
 
                 Console.Clear();
-                Console.WriteLine("Поздравляю с покупкой, приходи ещё!");
+                Console.WriteLine("Поздравляю с покупкой {0} за {1}, приходи ещё!", weapon.name, weapon.price);
                 player.LevelUp(200);
                 player.ConversionForce();
                 Thread.Sleep(2000);
@@ -130,32 +130,15 @@ namespace RPGAME
             Thread.Sleep(3000);
             Console.Clear();
             Console.WriteLine("Что покупаете?");
-            Console.WriteLine("1. AK-47 (5700)");
-            Console.WriteLine("2. Стечкин (1300)");
 
-            try
+            for (int i = 0; i < Entity.Weapons.Length; i++)
             {
-
-                int choise = Convert.ToInt32(Console.ReadLine());
-
-                switch (choise)
-                {
-                    case 1:
-                        Purchase("AK-47", 5700, player, 30);
-                        break;
-                    case 2:
-                        Purchase("Стечкин", 1300, player, 10);
-                        break;
-                    default:
-                        Console.Clear();
-                        Console.WriteLine("Такого у нас нет, извини");
-                        break;
-                }
-
+                Console.WriteLine((i+1) + ". " + Entity.Weapons[i].name + "(" + Entity.Weapons[i].price + ")");
             }
-            catch (Exception)
-            {
-            }
+
+            int choise = Convert.ToInt32(Console.ReadLine());
+
+            Purchase(player, Entity.Weapons[choise - 1]);
         }
     }
 
@@ -164,7 +147,17 @@ namespace RPGAME
         public int price, plusforce;
         public string name;
 
-        public static string[] WeaponsNames = { "AK_47", "STECHKIN", "DEAGLE", "SNIPER_RIFLE", "M4A4", "AWP", "USP_S", "AXE", "KNIFE" };
+        public static Entity[] Weapons = {
+            new Entity("AK_47", (int)WeaponsPrices.AK_47, (int)WeaponsForces.AK_47),
+            new Entity("STECHKIN", (int)WeaponsPrices.STECHKIN, (int)WeaponsForces.STECHKIN),
+            new Entity("DEAGLE", (int)WeaponsPrices.DEAGLE, (int)WeaponsForces.DEAGLE),
+            new Entity("SNIPER_RIFLE", (int)WeaponsPrices.SNIPER_RIFLE, (int)WeaponsForces.SNIPER_RIFLE),
+            new Entity("M4A4", (int)WeaponsPrices.M4A4, (int)WeaponsForces.M4A4),
+            new Entity("AWP", (int)WeaponsPrices.AWP, (int)WeaponsForces.AWP),
+            new Entity("USP_S", (int)WeaponsPrices.USP_S, (int)WeaponsForces.USP_S),
+            new Entity("AXE", (int)WeaponsPrices.AXE, (int)WeaponsForces.AXE),
+            new Entity("KNIFE", (int)WeaponsPrices.KNIFE, (int)WeaponsForces.KNIFE)
+        };
 
         public Entity(string _name, int _price, int force)
         {
