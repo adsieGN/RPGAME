@@ -102,7 +102,7 @@ namespace RPGAME
                     Program.player.money -= weapon.price;
                     Weaponscount--;
 
-                    Console.WriteLine(i + ". Покупка: Поздравляю с приобретением {0} за {1}, приходи ещё!", weapon.name, weapon.price);
+                    Console.WriteLine(i+1 + ". Покупка: Поздравляю с приобретением {0} за {1}, приходи ещё!", weapon.name, weapon.price);
 
                     Program.player.LevelUp(200);
                     Program.player.ConversionForce();
@@ -177,7 +177,7 @@ namespace RPGAME
 
         public override string ToString()
         {
-            return name+" --- "+price;
+            return name+" --- "+plusforce+" {DAMAGE}";
         }
     }
 
@@ -280,7 +280,7 @@ namespace RPGAME
             {
                 level++;
                 exp -= expToLevelUP;
-                expToLevelUP = (level * 6) * 100;
+                expToLevelUP = (level * 12) * 100;
                 Console.Title = String.Format("{0}: HP - {1}, Strenght - {2}, Level - {3}, Exp - {4}/{5}, Money - {6}", name, hp, strenght, level, exp, expToLevelUP, money);
                 Console.Beep();
             }
@@ -335,9 +335,9 @@ namespace RPGAME
             Console.Clear();
             Console.WriteLine("---------------------------INVENTORY---------------------------");
             Console.ForegroundColor = ConsoleColor.DarkRed;
-            foreach (Entity str in inventory)
+            foreach (Entity weapon in inventory)
             {
-                Console.WriteLine("\t\t\t" + str.ToString());
+                Console.WriteLine("\t\t\t" + weapon.ToString());
             }
             Console.ResetColor();
             Console.WriteLine();
@@ -419,7 +419,7 @@ namespace RPGAME
             int age = rand1.Next(20, 60);
             string job = "Странник";
 
-            player = new Person(age, 50000, sex, job);
+            player = new Person(age, 4000, sex, job);
             arena = new Arena();
             shop = new Shop();
 
