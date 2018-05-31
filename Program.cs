@@ -24,6 +24,7 @@ namespace RPGAME
 
         public void Breefing()
         {
+            Console.Clear();
             Console.WriteLine("Какова сумма ставки?");
             bet = Convert.ToInt32(Console.ReadLine());
 
@@ -36,6 +37,8 @@ namespace RPGAME
             else
             {
                 Console.WriteLine("Подкопи денешек и подходи снова...");
+                Thread.Sleep(2000);
+                Console.Clear();
             }
         }
 
@@ -63,44 +66,43 @@ namespace RPGAME
         }
     }
 
-    class Shop
+    static class Shop
     {
-        public Person seller;
-        int count;
-         
-        public Shop()
+        static public Person seller = Person.RandomPerson("Продавец", 150000);
+        static int Weaponscount = 20;
+
+        static public void Purchase(string Wname, int price,Person player, int force)
         {
-            seller = Person.RandomPerson("Продавец", 150000);
-            count = 20;
-        }
-        public void Purchase(string Wname, int price,Person player, int force)
-        {
+            Console.Clear();
+
             if (player.money >= price)
             {
                 player.inventory.Add(new Entity(Wname, 5000, force));
                 seller.money += price;
                 player.money -= price;
-                count--;
+                Weaponscount--;
 
                 Console.Clear();
                 Console.WriteLine("Поздравляю с покупкой, приходи ещё!");
                 player.LevelUp(200);
                 player.ConversionForce();
                 Thread.Sleep(2000);
+                Console.Clear();
             }
             else
             {
                 Console.WriteLine("Подкопи денешек и приходи снова!");
                 Thread.Sleep(2000);
+                Console.Clear();
             }
         }
 
-        public void Breefing(Person player)
+        static public void Breefing(Person player)
         {
             Console.Clear();
             Console.WriteLine("Информация магазина:");
             Console.WriteLine("Продавец: "+seller.name);
-            Console.WriteLine("Оружия в наличии {0} штук", count);
+            Console.WriteLine("Оружия в наличии {0} штук", Weaponscount);
 
             Thread.Sleep(3000);
             Console.Clear();
@@ -122,9 +124,11 @@ namespace RPGAME
                         Purchase("Стечкин", 1300, player, 10);
                         break;
                     default:
+                        Console.Clear();
                         Console.WriteLine("Такого у нас нет, извини");
                         break;
                 }
+
             }
             catch (Exception)
             {
@@ -194,7 +198,7 @@ namespace RPGAME
                     sex_ = "Женский";
                     break;
                 default:
-                    sex_ = "Муской";
+                    sex_ = "Мужской";
                     break;
             }
             return new Person(rand1.Next(16, 60), money_, sex_, job_, rand1.Next(1, 120));
@@ -213,7 +217,7 @@ namespace RPGAME
                     sex_ = "Женский";
                     break;
                 default:
-                    sex_ = "Муской";
+                    sex_ = "Мужской";
                     break;
             }
             return new Person(rand1.Next(16, 60), money_, sex_, job_);
@@ -260,7 +264,7 @@ namespace RPGAME
             Thread.Sleep(3000);
             Environment.Exit(0);
         }
-        public void Stats()
+        public void ShowStats()
         {
             Console.Clear();
             Console.WriteLine("----------------------------STATS------------------------------");
@@ -273,7 +277,7 @@ namespace RPGAME
             Console.WriteLine();
             Console.ResetColor();
         }
-        public void Inventory()
+        public void ShowInventory()
         {
             Console.Clear();
             Console.WriteLine("---------------------------INVENTORY---------------------------");
@@ -299,33 +303,36 @@ namespace RPGAME
             Console.WriteLine("4. Арена\n");
             Console.ResetColor();
 
-            int i = Convert.ToInt32(Console.ReadLine());
-
-            Shop shop = new Shop();
-            Arena arena = new Arena(user);
-
-            switch (i)
+            try
             {
-                case 1:
-                    user.Inventory();
-                    Menu(user);
-                    break;
-                case 2:
-                    user.Stats();
-                    Menu(user);
-                    break;
-                case 3:
-                    shop.Breefing(user);
-                    Menu(user);
-                    break;
-                case 4:
-                    arena.Breefing();
-                    Menu(user);
-                    break;
-                default:
-                    Menu(user);
-                    break;
+                int i = Convert.ToInt32(Console.ReadLine());
+
+                Arena arena = new Arena(user);
+
+                switch (i)
+                {
+                    case 1:
+                        user.ShowInventory();
+                        Menu(user);
+                        break;
+                    case 2:
+                        user.ShowStats();
+                        Menu(user);
+                        break;
+                    case 3:
+                        Shop.Breefing(user);
+                        Menu(user);
+                        break;
+                    case 4:
+                        arena.Breefing();
+                        Menu(user);
+                        break;
+                    default:
+                        Menu(user);
+                        break;
+                }
             }
+            catch (Exception) { Console.Clear(); Menu(user); }
         }
 
         static void Main(string[] args)
@@ -355,7 +362,7 @@ namespace RPGAME
             }
 
             int age = rand1.Next(20, 60);
-            string job = "hunter";
+            string job = "Странник";
 
             var user = new Person(age, 3500, sex, job);
             Thread.Sleep(2000);
