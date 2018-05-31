@@ -1,11 +1,10 @@
 ﻿using System;
+using System.IO;
+using System.Xml;
 using System.Threading;
 using Faker;
-using System.IO;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace RPGAME
 {
@@ -32,9 +31,9 @@ namespace RPGAME
         AXE = 2000,
         KNIFE = 1000
     };
-    
+
     class Arena
-    { 
+    {
         Random rand1 = new Random();
         public int bet;
 
@@ -66,7 +65,7 @@ namespace RPGAME
         {
             Person enemy1 = Person.Randomplayer("Боец", 2000);
 
-            if(enemy1.strenght >= Program.player.strenght)
+            if (enemy1.strenght >= Program.player.strenght)
             {
                 Console.WriteLine("Вы проиграли...");
                 Program.player.Damage(-enemy1.strenght);
@@ -74,9 +73,9 @@ namespace RPGAME
                 Thread.Sleep(2000);
                 Console.Clear();
             }
-            else if(enemy1.strenght < Program.player.strenght)
+            else if (enemy1.strenght < Program.player.strenght)
             {
-                Program.player.Damage(enemy1.strenght - Program.player.strenght );
+                Program.player.Damage(enemy1.strenght - Program.player.strenght);
                 Program.player.money += bet * 2;
                 Console.WriteLine("Вы выйграли {0}", bet);
                 Program.player.LevelUp(800);
@@ -86,10 +85,13 @@ namespace RPGAME
         }
     }
 
-    class Shop
+    [Serializable]
+    public class Shop
     {
         public Person seller = Person.Randomplayer("Продавец", 150000);
-        int Weaponscount = new Random().Next(20, 100);
+        public int Weaponscount = new Random().Next(20, 100);
+
+        public Shop() { }
 
         public void Purchase(Entity weapon, int count = 1)
         {
@@ -115,6 +117,7 @@ namespace RPGAME
                     break;
                 }
             }
+
             Thread.Sleep(2000);
             Console.Clear();
         }
@@ -151,7 +154,8 @@ namespace RPGAME
         }
     }
 
-    class Entity
+    [Serializable]
+    public class Entity
     {
         public int price, plusforce;
         public string name;
@@ -168,6 +172,7 @@ namespace RPGAME
             new Entity("KNIFE", (int)WeaponsPrices.KNIFE, (int)WeaponsForces.KNIFE)
         };
 
+        public Entity() { }
         public Entity(string _name, int _price, int force)
         {
             name = _name;
@@ -181,15 +186,17 @@ namespace RPGAME
         }
     }
 
-    class Person
+    [Serializable]
+    public class Person
     {
         static Random rand1 = new Random();
-        private List<string> names = new List<string>();
+        static List<string> names = new List<string>();
 
         public int age, money, hp, force, level, exp, expToLevelUP, strenght;
         public string sex, job, name;
-        public List<Entity> inventory = new List<Entity>();
+        internal List<Entity> inventory = new List<Entity>();
 
+        public Person() { }
         public Person(int _age, int _money, string _sex, string _job, int _force = 20, int _level = 1)
         {
             var rand1 = new Random();
@@ -350,6 +357,32 @@ namespace RPGAME
         public static Person player;
         public static Shop shop;
 
+        public static void SaveGame()
+        {
+            try
+            {
+                XmlSerializer serializer = new XmlSerializer(typeof(Person));
+                StreamWriter writter = new StreamWriter("player");
+                serializer.Serialize(writter, player);
+                writter.Close();
+
+                serializer = new XmlSerializer(typeof(List<Entity>));
+                writter = new StreamWriter("inventory");
+                serializer.Serialize(writter, player.inventory);
+                writter.Close();
+
+                serializer = new XmlSerializer(typeof(Shop));
+                writter = new StreamWriter("shop");
+                serializer.Serialize(writter, shop);
+                writter.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.Title = ex.Message;
+            }
+
+        }
+
         public static void Menu()
         {
             Console.ForegroundColor = ConsoleColor.DarkGray;
@@ -358,6 +391,7 @@ namespace RPGAME
             Console.WriteLine("2. Статистика");
             Console.WriteLine("3. Магазин");
             Console.WriteLine("4. Арена\n");
+            Console.WriteLine("5. Сохранить игру\n");
             Console.ResetColor();
 
             try
@@ -380,6 +414,10 @@ namespace RPGAME
                         break;
                     case 4:
                         arena.Breefing();
+                        Menu();
+                        break;
+                    case 5:
+                        SaveGame();
                         Menu();
                         break;
                     default:
@@ -422,6 +460,7 @@ namespace RPGAME
             player = new Person(age, 4000, sex, job);
             arena = new Arena();
             shop = new Shop();
+
 
             Thread.Sleep(2000);
             Console.Title = String.Format("{0}: HP - {1}, Strenght - {2}, Level - {3}, Exp - {4}/{5}, Money - {6}", player.name, player.hp, player.strenght, player.level, player.exp, player.expToLevelUP, player.money);
