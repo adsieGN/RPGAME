@@ -69,7 +69,8 @@ namespace RPGAME
             if(enemy1.strenght >= Program.player.strenght)
             {
                 Console.WriteLine("Вы проиграли...");
-                Program.player.Damage(-(rand1.Next(20, 100)));
+                enemy1.ShowStats();
+                Program.player.Damage(-enemy1.strenght);
                 Program.player.LevelUp(100);
                 Thread.Sleep(2000);
                 Console.Clear();
@@ -79,6 +80,7 @@ namespace RPGAME
                 Program.player.Damage(-3);
                 Program.player.money += bet * 2;
                 Console.WriteLine("Вы выйграли {0}", bet);
+                enemy1.ShowStats();
                 Program.player.LevelUp(800);
                 Thread.Sleep(2000);
                 Console.Clear();
@@ -102,7 +104,7 @@ namespace RPGAME
                     Program.player.money -= weapon.price;
                     Weaponscount--;
 
-                    Console.WriteLine(i + "Покупка: Поздравляю с приобретением {0} за {1}, приходи ещё!", weapon.name, weapon.price);
+                    Console.WriteLine(i + ". Покупка: Поздравляю с приобретением {0} за {1}, приходи ещё!", weapon.name, weapon.price);
 
                     Program.player.LevelUp(200);
                     Program.player.ConversionForce();
@@ -194,7 +196,7 @@ namespace RPGAME
         {
             var rand1 = new Random();
 
-            hp = 100; exp = 0; force = 20; expToLevelUP = (level * 6)*100;
+            hp = 1000; exp = 0; force = 20; expToLevelUP = (level * 6)*100;
 
             age = _age;
             sex = _sex;
@@ -213,7 +215,7 @@ namespace RPGAME
 
         }
 
-        public static Person Randomplayer(string job_ = "Рабочий", int money_ = 3500)
+        public static Person Randomplayer(string job_ = "Рабочий", int money_ = 3500, bool withWeapon = true)
         {
             string sex_;
 
@@ -229,9 +231,20 @@ namespace RPGAME
                     sex_ = "Мужской";
                     break;
             }
-            return new Person(rand1.Next(16, 60), money_, sex_, job_, rand1.Next(1, 120));
+            Person person = new Person(rand1.Next(16, 60), money_, sex_, job_, 20, rand1.Next(1, 5));
+
+            if (withWeapon)
+            {
+                for(int i = 1; i <= rand1.Next(1, 5); i++)
+                {
+                    person.inventory.Add(Entity.Weapons[rand1.Next(0, Entity.Weapons.Length)]);
+                }
+            }
+            person.ConversionForce();
+
+            return person;
         }
-        public static Person Randomplayer(int money_ = 3500, string job_ = "Рабочий")
+        public static Person Randomplayer(int money_ = 3500, string job_ = "Рабочий", bool withWeapon = true)
         {
             Random rand1 = new Random();
             string sex_;
@@ -248,7 +261,18 @@ namespace RPGAME
                     sex_ = "Мужской";
                     break;
             }
-            return new Person(rand1.Next(16, 60), money_, sex_, job_);
+            Person person = new Person(rand1.Next(16, 60), money_, sex_, job_, 20, rand1.Next(1, 5));
+
+            if (withWeapon)
+            {
+                for (int i = 1; i <= rand1.Next(1, 5); i++)
+                {
+                    person.inventory.Add(Entity.Weapons[rand1.Next(0, Entity.Weapons.Length)]);
+                }
+            }
+            person.ConversionForce();
+
+            return person;
         }
         public void LevelUp(int sumexp)
         {
@@ -299,6 +323,9 @@ namespace RPGAME
             Console.ForegroundColor = ConsoleColor.DarkRed;
             Console.WriteLine("Имя: "+name);
             Console.WriteLine("Пол: "+sex);
+            Console.WriteLine("Уровень: " + level);
+            Console.WriteLine("EXP: " + exp);
+            Console.WriteLine("Общая сила: "+strenght);
             Console.WriteLine("Работа: "+job);
             Console.WriteLine("Деньги: "+money);
             Console.WriteLine("Возраст: "+age);
