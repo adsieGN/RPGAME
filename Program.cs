@@ -37,12 +37,10 @@ namespace RPGAME
     { 
         Random rand1 = new Random();
         public int bet;
-        public Person player;
 
-        public Arena(Person _player)
+        public Arena()
         {
-            player = _player;
-            player.ConversionForce();
+            Program.player.ConversionForce();
         }
 
         public void Breefing()
@@ -51,10 +49,9 @@ namespace RPGAME
             Console.WriteLine("Какова сумма ставки?");
             bet = Convert.ToInt32(Console.ReadLine());
 
-            if (player.money >= bet)
+            if (Program.player.money >= bet)
             {
-                player.money -= bet;
-
+                Program.player.money -= bet;
                 StartBattle();
             }
             else
@@ -67,64 +64,67 @@ namespace RPGAME
 
         public void StartBattle()
         {
-            Person enemy1 = Person.RandomPerson("Боец", 2000);
+            Person enemy1 = Person.Randomplayer("Боец", 2000);
 
-            if(enemy1.strenght >= player.strenght)
+            if(enemy1.strenght >= Program.player.strenght)
             {
                 Console.WriteLine("Вы проиграли...");
-                player.Damage(-(rand1.Next(20, 100)));
-                player.LevelUp(100);
+                Program.player.Damage(-(rand1.Next(20, 100)));
+                Program.player.LevelUp(100);
                 Thread.Sleep(2000);
                 Console.Clear();
             }
-            else if(enemy1.strenght < player.strenght)
+            else if(enemy1.strenght < Program.player.strenght)
             {
-                player.Damage(-3);
-                player.money += bet * 2;
+                Program.player.Damage(-3);
+                Program.player.money += bet * 2;
                 Console.WriteLine("Вы выйграли {0}", bet*2);
-                player.LevelUp(800);
+                Program.player.LevelUp(800);
                 Thread.Sleep(2000);
                 Console.Clear();
             }
         }
     }
 
-    static class Shop
+    class Shop
     {
-        static public Person seller = Person.RandomPerson("Продавец", 150000);
-        static int Weaponscount = new Random().Next(20, 100);
+        public Person seller = Person.Randomplayer("Продавец", 150000);
+        int Weaponscount = new Random().Next(20, 100);
 
-        static public void Purchase(Person player, Entity weapon)
+        public void Purchase(Person player, Entity weapon, int count = 1)
         {
+            for (int i = 0; i < count; i++)
+            {
+                if (player.money >= weapon.price)
+                {
+                    player.inventory.Add(weapon);
+                    seller.money += weapon.price;
+                    player.money -= weapon.price;
+                    Weaponscount--;
+
+                    Console.Clear();
+                    Console.WriteLine("Поздравляю с покупкой {0} за {1}, приходи ещё!", weapon.name, weapon.price);
+
+                    player.LevelUp(200);
+                    player.ConversionForce();
+                }
+                else
+                {
+                    Console.WriteLine("Подкопи денешек и приходи снова!");
+                    Thread.Sleep(2000);
+                    Console.Clear();
+                    break;
+                }
+            }
+            Thread.Sleep(2000);
             Console.Clear();
-
-            if (player.money >= weapon.price)
-            {
-                player.inventory.Add(weapon);
-                seller.money += weapon.price;
-                player.money -= weapon.price;
-                Weaponscount--;
-
-                Console.Clear();
-                Console.WriteLine("Поздравляю с покупкой {0} за {1}, приходи ещё!", weapon.name, weapon.price);
-                player.LevelUp(200);
-                player.ConversionForce();
-                Thread.Sleep(2000);
-                Console.Clear();
-            }
-            else
-            {
-                Console.WriteLine("Подкопи денешек и приходи снова!");
-                Thread.Sleep(2000);
-                Console.Clear();
-            }
         }
 
-        static public void Breefing(Person player)
+        public void Breefing()
         {
             Console.Clear();
             Console.WriteLine("Информация магазина:");
-            Console.WriteLine("Продавец: "+seller.name);
+            Console.WriteLine("Продавец: " + seller.name);
             Console.WriteLine("Оружия в наличии {0} штук", Weaponscount);
 
             Thread.Sleep(3000);
@@ -133,12 +133,20 @@ namespace RPGAME
 
             for (int i = 0; i < Entity.Weapons.Length; i++)
             {
-                Console.WriteLine((i+1) + ". " + Entity.Weapons[i].name + "(" + Entity.Weapons[i].price + ")");
+                Console.WriteLine((i + 1) + ". " + Entity.Weapons[i].name + "(" + Entity.Weapons[i].price + ")");
             }
 
-            int choise = Convert.ToInt32(Console.ReadLine());
+            int Wchoise = Convert.ToInt32(Console.ReadLine());
+            Console.Clear();
 
-            Purchase(player, Entity.Weapons[choise - 1]);
+            Console.WriteLine("Сколько штук?");
+            int countChoise;
+
+            countChoise = Convert.ToInt32(Console.ReadLine());
+            Console.Clear();
+
+            Purchase(Program.player, Entity.Weapons[Wchoise - 1], countChoise);
+
         }
     }
 
@@ -204,7 +212,7 @@ namespace RPGAME
 
         }
 
-        public static Person RandomPerson(string job_ = "Рабочий", int money_ = 3500)
+        public static Person Randomplayer(string job_ = "Рабочий", int money_ = 3500)
         {
             string sex_;
 
@@ -222,7 +230,7 @@ namespace RPGAME
             }
             return new Person(rand1.Next(16, 60), money_, sex_, job_, rand1.Next(1, 120));
         }
-        public static Person RandomPerson(int money_ = 3500, string job_ = "Рабочий")
+        public static Person Randomplayer(int money_ = 3500, string job_ = "Рабочий")
         {
             Random rand1 = new Random();
             string sex_;
@@ -312,7 +320,11 @@ namespace RPGAME
 
     class Program
     {
-        public static void Menu(Person user)
+        public static Arena arena;
+        public static Person player;
+        public static Shop shop;
+
+        public static void Menu()
         {
             Console.ForegroundColor = ConsoleColor.DarkGray;
             Console.WriteLine("-----------------------Выберите действие-----------------------");
@@ -326,32 +338,30 @@ namespace RPGAME
             {
                 int i = Convert.ToInt32(Console.ReadLine());
 
-                Arena arena = new Arena(user);
-
                 switch (i)
                 {
                     case 1:
-                        user.ShowInventory();
-                        Menu(user);
+                        player.ShowInventory();
+                        Menu();
                         break;
                     case 2:
-                        user.ShowStats();
-                        Menu(user);
+                        player.ShowStats();
+                        Menu();
                         break;
                     case 3:
-                        Shop.Breefing(user);
-                        Menu(user);
+                        shop.Breefing();
+                        Menu();
                         break;
                     case 4:
                         arena.Breefing();
-                        Menu(user);
+                        Menu();
                         break;
                     default:
-                        Menu(user);
+                        Menu();
                         break;
                 }
             }
-            catch (Exception) { Console.Clear(); Menu(user); }
+            catch (Exception) { Console.Clear(); Menu(); }
         }
 
         static void Main(string[] args)
@@ -383,12 +393,15 @@ namespace RPGAME
             int age = rand1.Next(20, 60);
             string job = "Странник";
 
-            var user = new Person(age, 3500, sex, job);
+            player = new Person(age, 3500, sex, job);
+            arena = new Arena();
+            shop = new Shop();
+
             Thread.Sleep(2000);
-            Console.Title = String.Format("{0}: HP - {1}, Strenght - {2}, Level - {3}, Exp - {4}/{5}, Money - {6}", user.name, user.hp, user.strenght, user.level, user.exp, user.expToLevelUP, user.money);
+            Console.Title = String.Format("{0}: HP - {1}, Strenght - {2}, Level - {3}, Exp - {4}/{5}, Money - {6}", player.name, player.hp, player.strenght, player.level, player.exp, player.expToLevelUP, player.money);
 
             Console.Clear();
-            Menu(user);
+            Menu();
         }
     }
 }
