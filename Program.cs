@@ -434,6 +434,8 @@ namespace RPGAME
                 stream = new FileStream(@"C:\Users\ADSie\source\repos\RPGAME\RPGAME\bin\Debug\shop", FileMode.OpenOrCreate);
                 shop = (Shop)serializer.Deserialize(stream);
                 stream.Close();
+
+                arena = new Arena();
             }
             catch (Exception ex)
             {
