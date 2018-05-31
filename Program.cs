@@ -9,10 +9,33 @@ using System.Threading.Tasks;
 
 namespace RPGAME
 {
+    public enum WeaponsIndexes { AK_47, STECHKIN, DEAGLE, SNIPER_RIFLE, M4A4, AWP, USP_S, AXE, KNIFE };
+    public enum WeaponsDamage {
+        AK_47 = 120,
+        STECHKIN = 40,
+        DEAGLE = 60,
+        SNIPER_RIFLE = 140,
+        M4A4 = 100,
+        AWP = 560,
+        USP_S = 40,
+        AXE = 25,
+        KNIFE = 15
+    };
+    public enum WeaponsPrices {
+        AK_47 = 12700,
+        STECHKIN = 6400,
+        DEAGLE = 7300,
+        SNIPER_RIFLE = 14500,
+        M4A4 = 10200,
+        AWP = 15600,
+        USP_S = 5200,
+        AXE = 2000,
+        KNIFE = 1000
+    };
+    
     class Arena
-    {
+    { 
         Random rand1 = new Random();
-
         public int bet;
         public Person player;
 
@@ -46,7 +69,7 @@ namespace RPGAME
         {
             Person enemy1 = Person.RandomPerson("Боец", 2000);
 
-            if(enemy1.strenght > player.strenght)
+            if(enemy1.strenght >= player.strenght)
             {
                 Console.WriteLine("Вы проиграли...");
                 player.Damage(-(rand1.Next(20, 100)));
@@ -59,7 +82,7 @@ namespace RPGAME
                 player.Damage(-3);
                 player.money += bet * 2;
                 Console.WriteLine("Вы выйграли {0}", bet*2);
-                player.LevelUp(400);
+                player.LevelUp(800);
                 Thread.Sleep(2000);
                 Console.Clear();
             }
@@ -69,7 +92,7 @@ namespace RPGAME
     static class Shop
     {
         static public Person seller = Person.RandomPerson("Продавец", 150000);
-        static int Weaponscount = 20;
+        static int Weaponscount = new Random().Next(20, 100);
 
         static public void Purchase(string Wname, int price,Person player, int force)
         {
@@ -141,6 +164,8 @@ namespace RPGAME
         public int price, plusforce;
         public string name;
 
+        public static string[] WeaponsNames = { "AK_47", "STECHKIN", "DEAGLE", "SNIPER_RIFLE", "M4A4", "AWP", "USP_S", "AXE", "KNIFE" };
+
         public Entity(string _name, int _price, int force)
         {
             name = _name;
@@ -163,17 +188,18 @@ namespace RPGAME
         public string sex, job, name;
         public List<Entity> inventory = new List<Entity>();
 
-        public Person(int _age, int _money, string _sex, string _job, int _force = 20)
+        public Person(int _age, int _money, string _sex, string _job, int _force = 20, int _level = 1)
         {
             var rand1 = new Random();
 
-            hp = 100; level = 1; exp = 0; force = 20; expToLevelUP = (level * 6)*100;
+            hp = 100; exp = 0; force = 20; expToLevelUP = (level * 6)*100;
 
             age = _age;
             sex = _sex;
             job = _job;
             money = _money;
             force = _force;
+            level = _level;
             ConversionForce();
 
             for(int i = 1; i <= 20; i++)
