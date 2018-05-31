@@ -78,7 +78,7 @@ namespace RPGAME
             {
                 Program.player.Damage(-3);
                 Program.player.money += bet * 2;
-                Console.WriteLine("Вы выйграли {0}", bet*2);
+                Console.WriteLine("Вы выйграли {0}", bet);
                 Program.player.LevelUp(800);
                 Thread.Sleep(2000);
                 Console.Clear();
@@ -91,22 +91,21 @@ namespace RPGAME
         public Person seller = Person.Randomplayer("Продавец", 150000);
         int Weaponscount = new Random().Next(20, 100);
 
-        public void Purchase(Person player, Entity weapon, int count = 1)
+        public void Purchase(Entity weapon, int count = 1)
         {
             for (int i = 0; i < count; i++)
             {
-                if (player.money >= weapon.price)
+                if (Program.player.money >= weapon.price)
                 {
-                    player.inventory.Add(weapon);
+                    Program.player.inventory.Add(weapon);
                     seller.money += weapon.price;
-                    player.money -= weapon.price;
+                    Program.player.money -= weapon.price;
                     Weaponscount--;
 
-                    Console.Clear();
-                    Console.WriteLine("Поздравляю с покупкой {0} за {1}, приходи ещё!", weapon.name, weapon.price);
+                    Console.WriteLine(i + "Покупка: Поздравляю с приобретением {0} за {1}, приходи ещё!", weapon.name, weapon.price);
 
-                    player.LevelUp(200);
-                    player.ConversionForce();
+                    Program.player.LevelUp(200);
+                    Program.player.ConversionForce();
                 }
                 else
                 {
@@ -140,12 +139,14 @@ namespace RPGAME
             Console.Clear();
 
             Console.WriteLine("Сколько штук?");
-            int countChoise;
 
-            countChoise = Convert.ToInt32(Console.ReadLine());
+            int countChoise = Convert.ToInt32(Console.ReadLine());
+
+            if(countChoise <= 0) { countChoise = 1; }
+
             Console.Clear();
 
-            Purchase(Program.player, Entity.Weapons[Wchoise - 1], countChoise);
+            Purchase(Entity.Weapons[Wchoise - 1], countChoise);
 
         }
     }
@@ -393,7 +394,7 @@ namespace RPGAME
             int age = rand1.Next(20, 60);
             string job = "Странник";
 
-            player = new Person(age, 3500, sex, job);
+            player = new Person(age, 50000, sex, job);
             arena = new Arena();
             shop = new Shop();
 
