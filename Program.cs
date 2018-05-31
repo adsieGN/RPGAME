@@ -357,6 +357,39 @@ namespace RPGAME
         public static Person player;
         public static Shop shop;
 
+        public static void NewGame()
+        {
+            Console.Clear();
+            Console.WriteLine("Чтобы приступить к созданию персонажа нажмите клавишу...");
+            Console.ReadLine();
+            Console.WriteLine("Создание...");
+            Console.ResetColor();
+
+
+            string sex;
+            int b = new Random().Next(1, 2);
+
+            switch (b)
+            {
+                case 1:
+                    sex = "Муской";
+                    break;
+                case 2:
+                    sex = "Женский";
+                    break;
+                default:
+                    sex = "Мужской";
+                    break;
+            }
+
+            int age = new Random().Next(20, 60);
+            string job = "Странник";
+
+            player = new Person(age, 4000, sex, job);
+            arena = new Arena();
+            shop = new Shop();
+        }
+
         public static void SaveGame()
         {
             try
@@ -381,6 +414,31 @@ namespace RPGAME
                 Console.Title = ex.Message;
             }
 
+        }
+
+        public static void LoadGame()
+        {
+            try
+            {
+                XmlSerializer serializer = new XmlSerializer(typeof(Person));
+                FileStream stream = new FileStream(@"C:\Users\ADSie\source\repos\RPGAME\RPGAME\bin\Debug\player", FileMode.OpenOrCreate);
+                player = (Person)serializer.Deserialize(stream);
+                stream.Close();
+
+                serializer = new XmlSerializer(typeof(List<Entity>));
+                stream = new FileStream(@"C:\Users\ADSie\source\repos\RPGAME\RPGAME\bin\Debug\inventory", FileMode.OpenOrCreate);
+                player.inventory = (List<Entity>)serializer.Deserialize(stream);
+                stream.Close();
+
+                serializer = new XmlSerializer(typeof(Shop));
+                stream = new FileStream(@"C:\Users\ADSie\source\repos\RPGAME\RPGAME\bin\Debug\shop", FileMode.OpenOrCreate);
+                shop = (Shop)serializer.Deserialize(stream);
+                stream.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.Title = ex.Message;
+            }
         }
 
         public static void Menu()
@@ -433,34 +491,24 @@ namespace RPGAME
             Random rand1 = new Random();
 
             Console.ForegroundColor = ConsoleColor.DarkGray;
-            Console.WriteLine("Чтобы приступить к созданию персонажа нажмите клавишу...");
-            Console.ReadLine();
-            Console.WriteLine("Создание...");
+            Console.WriteLine("Выберите действие:");
+            Console.WriteLine("1. Загрузиться");
+            Console.WriteLine("2. Начать новую игру");
             Console.ResetColor();
-
-            string sex;
-            int a = rand1.Next(1, 2);
+            int a = Convert.ToInt32(Console.ReadLine());
 
             switch (a)
             {
                 case 1:
-                    sex = "Муской";
+                    LoadGame();
                     break;
                 case 2:
-                    sex = "Женский";
+                    NewGame();
                     break;
                 default:
-                    sex = "Мужской";
+                    NewGame();
                     break;
             }
-
-            int age = rand1.Next(20, 60);
-            string job = "Странник";
-
-            player = new Person(age, 4000, sex, job);
-            arena = new Arena();
-            shop = new Shop();
-
 
             Thread.Sleep(2000);
             Console.Title = String.Format("{0}: HP - {1}, Strenght - {2}, Level - {3}, Exp - {4}/{5}, Money - {6}", player.name, player.hp, player.strenght, player.level, player.exp, player.expToLevelUP, player.money);
