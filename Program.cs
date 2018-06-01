@@ -8,8 +8,8 @@ using System.Xml.Serialization;
 
 namespace RPGAME
 {
-    public enum WeaponsIndexes { AK_47, STECHKIN, DEAGLE, SNIPER_RIFLE, M4A4, AWP, USP_S, AXE, KNIFE };
-    public enum WeaponsForces {
+    public enum DefWeaponsIndexes { AK_47, STECHKIN, DEAGLE, SNIPER_RIFLE, M4A4, AWP, USP_S, AXE, KNIFE };
+    public enum DefWeaponsForces {
         AK_47 = 120,
         STECHKIN = 40,
         DEAGLE = 60,
@@ -20,7 +20,7 @@ namespace RPGAME
         AXE = 25,
         KNIFE = 15
     };
-    public enum WeaponsPrices {
+    public enum DefWeaponsPrices {
         AK_47 = 12700,
         STECHKIN = 6400,
         DEAGLE = 7300,
@@ -161,15 +161,15 @@ namespace RPGAME
         public string name;
 
         public static Entity[] Weapons = {
-            new Entity("AK_47", (int)WeaponsPrices.AK_47, (int)WeaponsForces.AK_47),
-            new Entity("STECHKIN", (int)WeaponsPrices.STECHKIN, (int)WeaponsForces.STECHKIN),
-            new Entity("DEAGLE", (int)WeaponsPrices.DEAGLE, (int)WeaponsForces.DEAGLE),
-            new Entity("SNIPER_RIFLE", (int)WeaponsPrices.SNIPER_RIFLE, (int)WeaponsForces.SNIPER_RIFLE),
-            new Entity("M4A4", (int)WeaponsPrices.M4A4, (int)WeaponsForces.M4A4),
-            new Entity("AWP", (int)WeaponsPrices.AWP, (int)WeaponsForces.AWP),
-            new Entity("USP_S", (int)WeaponsPrices.USP_S, (int)WeaponsForces.USP_S),
-            new Entity("AXE", (int)WeaponsPrices.AXE, (int)WeaponsForces.AXE),
-            new Entity("KNIFE", (int)WeaponsPrices.KNIFE, (int)WeaponsForces.KNIFE)
+            new Entity("AK_47", (int)DefWeaponsPrices.AK_47, (int)DefWeaponsForces.AK_47),
+            new Entity("STECHKIN", (int)DefWeaponsPrices.STECHKIN, (int)DefWeaponsForces.STECHKIN),
+            new Entity("DEAGLE", (int)DefWeaponsPrices.DEAGLE, (int)DefWeaponsForces.DEAGLE),
+            new Entity("SNIPER_RIFLE", (int)DefWeaponsPrices.SNIPER_RIFLE, (int)DefWeaponsForces.SNIPER_RIFLE),
+            new Entity("M4A4", (int)DefWeaponsPrices.M4A4, (int)DefWeaponsForces.M4A4),
+            new Entity("AWP", (int)DefWeaponsPrices.AWP, (int)DefWeaponsForces.AWP),
+            new Entity("USP_S", (int)DefWeaponsPrices.USP_S, (int)DefWeaponsForces.USP_S),
+            new Entity("AXE", (int)DefWeaponsPrices.AXE, (int)DefWeaponsForces.AXE),
+            new Entity("KNIFE", (int)DefWeaponsPrices.KNIFE, (int)DefWeaponsForces.KNIFE)
         };
 
         public Entity() { }
@@ -388,6 +388,24 @@ namespace RPGAME
             player = new Person(age, 4000, sex, job);
             arena = new Arena();
             shop = new Shop();
+
+            SaveGame();
+        }
+
+        public static void InitGame()
+        {
+            Directory.CreateDirectory(@"C:\Users\ADSie\source\repos\RPGAME\RPGAME\bin\Debug\cfg\weapons");
+            FileStream stream;
+
+            foreach(Entity ent in Entity.Weapons)
+            {
+                XmlSerializer serializer = new XmlSerializer(typeof(Entity));
+                stream = new FileStream(@"C:\Users\ADSie\source\repos\RPGAME\RPGAME\bin\Debug\cfg\weapons\"+ent.name+".cfg", FileMode.OpenOrCreate);
+                serializer.Serialize(stream, ent);
+                stream.Close();
+            }
+
+            NewGame();
         }
 
         public static void SaveGame()
@@ -395,17 +413,17 @@ namespace RPGAME
             try
             {
                 XmlSerializer serializer = new XmlSerializer(typeof(Person));
-                StreamWriter writter = new StreamWriter("player");
+                FileStream writter = new FileStream(@"C:\Users\ADSie\source\repos\RPGAME\RPGAME\bin\Debug\cfg\player.cfg", FileMode.OpenOrCreate);
                 serializer.Serialize(writter, player);
                 writter.Close();
 
                 serializer = new XmlSerializer(typeof(List<Entity>));
-                writter = new StreamWriter("inventory");
+                writter = new FileStream(@"C:\Users\ADSie\source\repos\RPGAME\RPGAME\bin\Debug\cfg\inventory.cfg", FileMode.OpenOrCreate);
                 serializer.Serialize(writter, player.inventory);
                 writter.Close();
 
                 serializer = new XmlSerializer(typeof(Shop));
-                writter = new StreamWriter("shop");
+                writter = new FileStream(@"C:\Users\ADSie\source\repos\RPGAME\RPGAME\bin\Debug\cfg\shop.cfg", FileMode.OpenOrCreate); ;
                 serializer.Serialize(writter, shop);
                 writter.Close();
             }
@@ -421,19 +439,30 @@ namespace RPGAME
             try
             {
                 XmlSerializer serializer = new XmlSerializer(typeof(Person));
-                FileStream stream = new FileStream(@"C:\Users\ADSie\source\repos\RPGAME\RPGAME\bin\Debug\player", FileMode.OpenOrCreate);
+                FileStream stream = new FileStream(@"C:\Users\ADSie\source\repos\RPGAME\RPGAME\bin\Debug\cfg\player.cfg", FileMode.OpenOrCreate);
                 player = (Person)serializer.Deserialize(stream);
                 stream.Close();
 
                 serializer = new XmlSerializer(typeof(List<Entity>));
-                stream = new FileStream(@"C:\Users\ADSie\source\repos\RPGAME\RPGAME\bin\Debug\inventory", FileMode.OpenOrCreate);
+                stream = new FileStream(@"C:\Users\ADSie\source\repos\RPGAME\RPGAME\bin\Debug\cfg\inventory.cfg", FileMode.OpenOrCreate);
                 player.inventory = (List<Entity>)serializer.Deserialize(stream);
                 stream.Close();
 
                 serializer = new XmlSerializer(typeof(Shop));
-                stream = new FileStream(@"C:\Users\ADSie\source\repos\RPGAME\RPGAME\bin\Debug\shop", FileMode.OpenOrCreate);
+                stream = new FileStream(@"C:\Users\ADSie\source\repos\RPGAME\RPGAME\bin\Debug\cfg\shop.cfg", FileMode.OpenOrCreate);
                 shop = (Shop)serializer.Deserialize(stream);
                 stream.Close();
+
+                string[] WeaponFiles = Directory.GetFiles(@"C:\Users\ADSie\source\repos\RPGAME\RPGAME\bin\Debug\cfg\weapons");
+
+                for(int i = 0; i < WeaponFiles.Length; i++)
+                {
+                    XmlSerializer _serializer = new XmlSerializer(typeof(Entity));
+                    FileStream _stream = new FileStream(WeaponFiles[i], FileMode.Open);
+
+                    Entity.Weapons.SetValue(_serializer.Deserialize(_stream), i);
+                    _stream.Close();
+                }
 
                 arena = new Arena();
             }
@@ -478,6 +507,7 @@ namespace RPGAME
                         break;
                     case 5:
                         SaveGame();
+                        Console.Clear();
                         Menu();
                         break;
                     default:
@@ -497,6 +527,7 @@ namespace RPGAME
             Console.WriteLine("1. Загрузиться");
             Console.WriteLine("2. Начать новую игру");
             Console.ResetColor();
+            
             int a = Convert.ToInt32(Console.ReadLine());
 
             switch (a)
@@ -505,10 +536,10 @@ namespace RPGAME
                     LoadGame();
                     break;
                 case 2:
-                    NewGame();
+                    InitGame();
                     break;
                 default:
-                    NewGame();
+                    InitGame();
                     break;
             }
 
