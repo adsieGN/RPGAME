@@ -2,6 +2,7 @@
 using System.IO;
 using System.Xml;
 using System.Threading;
+using Faker.Extensions;
 using Faker;
 using System.Collections.Generic;
 using System.Xml.Serialization;
@@ -210,6 +211,7 @@ namespace RPGAME
             level = _level;
             ConversionForce();
             name = Name.FullName();
+            
 
         }
 
@@ -309,10 +311,10 @@ namespace RPGAME
         {
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine("Вы были убиты. Через 3с игра выключится");
+            Console.WriteLine("Вы были убиты. Через 3с игра начнётся заного...");
             Console.ResetColor();
             Thread.Sleep(3000);
-            Environment.Exit(0);
+            Program.InitGame();
         }
         public void ShowStats()
         {
@@ -418,7 +420,7 @@ namespace RPGAME
             }
 
             NewGame();
-            Program.Start();
+            Start();
         }
 
         public static void SaveGame()
