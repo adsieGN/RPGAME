@@ -394,7 +394,26 @@ namespace RPGAME
 
         public static void InitGame()
         {
-            Directory.CreateDirectory(@"C:\Users\ADSie\source\repos\RPGAME\RPGAME\bin\Debug\cfg\weapons");
+            if (Directory.Exists(@"C:\Users\ADSie\source\repos\RPGAME\RPGAME\bin\Debug\cfg"))
+            {
+                foreach (string file in Directory.GetFiles(@"C:\Users\ADSie\source\repos\RPGAME\RPGAME\bin\Debug\cfg"))
+                {
+                    File.Delete(file);
+                }
+            }
+            else
+            {
+                Directory.CreateDirectory(@"C:\Users\ADSie\source\repos\RPGAME\RPGAME\bin\Debug\cfg");
+            }
+
+            if (Directory.Exists(@"C:\Users\ADSie\source\repos\RPGAME\RPGAME\bin\Debug\cfg\weapons"))
+            {
+                foreach (string file in Directory.GetFiles(@"C:\Users\ADSie\source\repos\RPGAME\RPGAME\bin\Debug\cfg\weapons"))
+                {
+                    File.Delete(file);
+                }
+            }
+
             FileStream stream;
 
             foreach(Entity ent in Entity.Weapons)
@@ -406,6 +425,7 @@ namespace RPGAME
             }
 
             NewGame();
+            Program.Start();
         }
 
         public static void SaveGame()
@@ -480,7 +500,8 @@ namespace RPGAME
             Console.WriteLine("2. Статистика");
             Console.WriteLine("3. Магазин");
             Console.WriteLine("4. Арена\n");
-            Console.WriteLine("5. Сохранить игру\n");
+            Console.WriteLine("5. Сохранить игру");
+            Console.WriteLine("6. Начать новую игру");
             Console.ResetColor();
 
             try
@@ -510,6 +531,9 @@ namespace RPGAME
                         Console.Clear();
                         Menu();
                         break;
+                    case 6:
+                        InitGame();
+                        break;
                     default:
                         Menu();
                         break;
@@ -518,36 +542,30 @@ namespace RPGAME
             catch (Exception) { Console.Clear(); Menu(); }
         }
 
-        static void Main(string[] args)
+        public static void Start()
         {
             Random rand1 = new Random();
 
-            Console.ForegroundColor = ConsoleColor.DarkGray;
-            Console.WriteLine("Выберите действие:");
-            Console.WriteLine("1. Загрузиться");
-            Console.WriteLine("2. Начать новую игру");
-            Console.ResetColor();
-            
-            int a = Convert.ToInt32(Console.ReadLine());
+            string cfgDir = @"C:\Users\ADSie\source\repos\RPGAME\RPGAME\bin\Debug\cfg";
 
-            switch (a)
+            if (Directory.Exists(cfgDir) && File.Exists(cfgDir + @"\player.cfg") && File.Exists(cfgDir + @"\shop.cfg") && File.Exists(cfgDir + @"\inventory.cfg") && Directory.GetFiles(cfgDir + @"\weapons").Length > 3)
             {
-                case 1:
-                    LoadGame();
-                    break;
-                case 2:
-                    InitGame();
-                    break;
-                default:
-                    InitGame();
-                    break;
+                LoadGame();
             }
-
+            else
+            {
+                InitGame();
+            }
             Thread.Sleep(2000);
-            Console.Title = String.Format("{0}: HP - {1}, Strenght - {2}, Level - {3}, Exp - {4}/{5}, Money - {6}", player.name, player.hp, player.strenght, player.level, player.exp, player.expToLevelUP, player.money);
 
+            Console.Title = String.Format("{0}: HP - {1}, Strenght - {2}, Level - {3}, Exp - {4}/{5}, Money - {6}", player.name, player.hp, player.strenght, player.level, player.exp, player.expToLevelUP, player.money);
             Console.Clear();
             Menu();
+        }
+
+        static void Main(string[] args)
+        {
+            Start();
         }
     }
 }
