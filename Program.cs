@@ -157,8 +157,8 @@ namespace RPGAME
     [Serializable]
     public class Entity
     {
-        public string name;
         public int price, plusforce;
+        public string name;
 
         public static Entity[] Weapons = {
             new Entity("AK_47", (int)DefWeaponsPrices.AK_47, (int)DefWeaponsForces.AK_47),
@@ -365,6 +365,7 @@ namespace RPGAME
             Console.WriteLine("Создание...");
             Console.ResetColor();
 
+
             string sex;
             int b = new Random().Next(1, 2);
 
@@ -411,10 +412,6 @@ namespace RPGAME
                 {
                     File.Delete(file);
                 }
-            }
-            else
-            {
-                Directory.CreateDirectory(@"C:\Users\ADSie\source\repos\RPGAME\RPGAME\bin\Debug\cfg\weapons");
             }
 
             FileStream stream;
