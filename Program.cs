@@ -68,14 +68,14 @@ namespace RPGAME
             if (enemy1.strenght >= Program.player.strenght)
             {
                 Console.WriteLine("Вы проиграли...");
-                Program.player.Damage(-enemy1.strenght);
+                Program.player.Damage(Program.player.strenght - enemy1.strenght);
                 Program.player.LevelUp(100);
                 Thread.Sleep(2000);
                 Console.Clear();
             }
             else if (enemy1.strenght < Program.player.strenght)
             {
-                Program.player.Damage(enemy1.strenght - Program.player.strenght);
+                Program.player.Damage(rand1.Next(0, 100));
                 Program.player.money += bet * 2;
                 Console.WriteLine("Вы выйграли {0}", bet);
                 Program.player.LevelUp(800);
@@ -190,7 +190,6 @@ namespace RPGAME
     public class Person
     {
         static Random rand1 = new Random();
-        static List<string> names = new List<string>();
 
         public int age, money, hp, force, level, exp, expToLevelUP, strenght;
         public string sex, job, name;
@@ -201,7 +200,7 @@ namespace RPGAME
         {
             var rand1 = new Random();
 
-            hp = 1000; exp = 0; force = 20; expToLevelUP = (level * 6)*100;
+            hp = 1000; exp = 0; force = 20; expToLevelUP = (level * 6)*100+100;
 
             age = _age;
             sex = _sex;
@@ -210,13 +209,7 @@ namespace RPGAME
             force = _force;
             level = _level;
             ConversionForce();
-
-            for(int i = 1; i <= 20; i++)
-            {
-                names.Add(Name.FullName());
-            }
-
-            name = names[rand1.Next(0, names.Count-1)];
+            name = Name.FullName();
 
         }
 
@@ -287,7 +280,7 @@ namespace RPGAME
             {
                 level++;
                 exp -= expToLevelUP;
-                expToLevelUP = (level * 12) * 100;
+                expToLevelUP = (level * 20) * 100;
                 Console.Title = String.Format("{0}: HP - {1}, Strenght - {2}, Level - {3}, Exp - {4}/{5}, Money - {6}", name, hp, strenght, level, exp, expToLevelUP, money);
                 Console.Beep();
             }
